@@ -10,19 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/gitlab-webhook")
 public class CommitController {
 
     @Autowired
     private NotionSyncService notionSyncService;
 
-    @PostMapping("")
+    @PostMapping("/commit-parser")
     public ResponseEntity<String> handleWebhook(@RequestBody GithubWebhook githubWebhook){
+
         notionSyncService.syncToNotion();
 
         return ResponseEntity.ok().build();
     }
-
-
 
 }
