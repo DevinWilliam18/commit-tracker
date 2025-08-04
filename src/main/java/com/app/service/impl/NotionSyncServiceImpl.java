@@ -11,10 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class NotionSyncServiceImpl implements NotionSyncService {
 
@@ -66,7 +63,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
     }
 
     @Override
-    public void pushToNotion(NotionSync notionSync) {
+    public ResponseEntity<String> pushToNotion(NotionSync notionSync) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("");
@@ -79,24 +76,31 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(ADD_ROW_URL, request, String.class);
-
+        return response;
     }
 
     @Override
     public Map<String, Object> dataToNotion(NotionSync notionSync) {
         Map<String, Object> mappings = new HashMap<>();
+        Map<String, Map<String, String>> options = new HashMap<>();
 
         mappings.put(parentParams, "");
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(titleParams, "");
-        properties.put(platformParams, "");
-        properties.put(topicParams, "");
-        properties.put(difficultyParams, "");
-        properties.put(commitDateParams, "");
+
+        properties.put(titleParams, Map.of("title", Arrays.asList(Map.of("text", Map.of("content", notionSync.getTitle())))));
+
+        properties.put(platformParams, Map.of("select", Map.of("name", notionSync.getPlatform())));
+
+        properties.put(topicParams, Map.of("select", Map.of("name", notionSync.getTopic())));
+
+        properties.put(difficultyParams, Map.of("select", Map.of("name", notionSync.getDifficulty())));
+
+        properties.put(commitDateParams, Map.of("date", Map.of("start", notionSync.getCreatedAt().toString())));
 
         mappings.put(propertiesParams, properties);
 
         return mappings;
     }
+
 }
