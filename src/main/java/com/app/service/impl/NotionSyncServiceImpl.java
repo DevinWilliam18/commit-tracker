@@ -1,6 +1,7 @@
 package com.app.service.impl;
 
 import com.app.dao.CommitDao;
+import com.app.model.GitlabWebhook;
 import com.app.model.NotionSync;
 import com.app.service.NotionSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NotionSyncServiceImpl implements NotionSyncService {
 
@@ -50,15 +53,20 @@ public class NotionSyncServiceImpl implements NotionSyncService {
     }
 
     @Override
-    public void syncToNotion() {
+    public void syncToNotion(GitlabWebhook gitlabWebhook) {
 
-        List<NotionSync> unsyncedCommits = getSynedToNotionFalse();
+        //separate the commit message into some portions
+        NotionSync sync = convertMessage(gitlabWebhook);
 
-        for (NotionSync sync: unsyncedCommits) {
-            pushToNotion(sync);
-            sync.setSyncedToNotion(true);
-            commitDao.save(sync);
-        }
+        //store it on DB
+        sync.setSyncedToNotion(true);
+        commitDao.save(sync);
+
+        pushToNotion(sync);
+
+        //find the existing data and change the syncedToNotion status to be 'true'
+        // List<NotionSync> unsyncedCommits = getSynedToNotionFalse();
+
 
     }
 
@@ -101,6 +109,26 @@ public class NotionSyncServiceImpl implements NotionSyncService {
         mappings.put(propertiesParams, properties);
 
         return mappings;
+    }
+
+    @Override
+    public NotionSync convertMessage(GitlabWebhook gitlabWebhook) {
+        NotionSync sync = new NotionSync();
+        String input = gitlabWebhook.getCommit();
+        String regex = "^(.*?)\\\\s*\\\\[(.*?)\\\\]\\\\[(.*?)\\\\]\\\\[(.*?)\\\\]$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.matches()){
+            sync.setTitle(matcher.group(1));
+            sync.setTopic(matcher.group(2));
+            sync.setPlatform(matcher.group(3));
+            sync.setDifficulty(matcher.group(4));
+        }
+
+        return sync;
+
     }
 
 }

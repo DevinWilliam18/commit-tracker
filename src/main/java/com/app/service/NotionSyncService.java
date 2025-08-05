@@ -1,6 +1,8 @@
 package com.app.service;
 
+import com.app.model.GitlabWebhook;
 import com.app.model.NotionSync;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +13,12 @@ public interface NotionSyncService {
 
     List<NotionSync> getSynedToNotionFalse();
 
-    void syncToNotion();
+    void syncToNotion(GitlabWebhook gitlabWebhook);
 
-    void pushToNotion(NotionSync notionSync);
+    ResponseEntity<String> pushToNotion(NotionSync notionSync);
 
     Map<String, Object> dataToNotion(NotionSync notionSync);
+
+    NotionSync convertMessage(GitlabWebhook gitlabWebhook);
 
 }
