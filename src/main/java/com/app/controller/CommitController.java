@@ -1,6 +1,6 @@
 package com.app.controller;
 
-import com.app.model.GithubWebhook;
+import com.app.model.GitlabWebhook;
 import com.app.service.NotionSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ public class CommitController {
     private NotionSyncService notionSyncService;
 
     @PostMapping("/commit-parser")
-    public ResponseEntity<String> handleWebhook(@RequestBody GithubWebhook githubWebhook){
+    public ResponseEntity<String> handleWebhook(@RequestBody GitlabWebhook gitlabWebhook){
 
-        notionSyncService.syncToNotion();
+        notionSyncService.syncToNotion(gitlabWebhook);
 
         return ResponseEntity.ok().build();
     }
