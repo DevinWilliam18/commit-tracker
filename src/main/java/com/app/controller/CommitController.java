@@ -19,9 +19,14 @@ public class CommitController {
     @PostMapping("/commit-parser")
     public ResponseEntity<String> handleWebhook(@RequestBody GitlabWebhook gitlabWebhook){
 
-        notionSyncService.syncToNotion(gitlabWebhook);
+        try{
+            notionSyncService.syncToNotion(gitlabWebhook);
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
+
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

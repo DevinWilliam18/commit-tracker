@@ -64,21 +64,26 @@ public class NotionSyncServiceImpl implements NotionSyncService {
     }
 
     @Override
-    public void syncToNotion(GitlabWebhook gitlabWebhook) {
+    public void syncToNotion(GitlabWebhook gitlabWebhook){
 
-        //separate the commit message into some portions
-        log.info("test");
-        NotionSync sync = convertMessage(gitlabWebhook);
+        try{
+            //separate the commit message into some portions
+            log.info("test");
+            NotionSync sync = convertMessage(gitlabWebhook);
 
-        //store it on DB
-        sync.setSyncedToNotion(true);
-        commitDao.save(sync);
+            //store it on DB
+            sync.setSyncedToNotion(true);
+            commitDao.save(sync);
 
-        pushToNotion(sync);
+            pushToNotion(sync);
+
+        }catch (Exception e){
+            log.error("Error: {}", e.getMessage());
+            throw e;
+        }
 
         //find the existing data and change the syncedToNotion status to be 'true'
         // List<NotionSync> unsyncedCommits = getSynedToNotionFalse();
-
 
     }
 
@@ -133,30 +138,37 @@ public class NotionSyncServiceImpl implements NotionSyncService {
     }
 
     @Override
-    public NotionSync convertMessage(GitlabWebhook gitlabWebhook) {
-        NotionSync sync = new NotionSync();
-        String input = gitlabWebhook.getCommit();
-        long time = System.currentTimeMillis();
-        log.info("commit: {}", gitlabWebhook.getCommit());
-        String regex = "(.*?)\\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]";
+    public NotionSync convertMessage(GitlabWebhook gitlabWebhook){
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        log.info("matcher.matches(): {}", matcher.matches());
+        try{
+            NotionSync sync = new NotionSync();
+            String input = gitlabWebhook.getCommit();
+            long time = System.currentTimeMillis();
+            log.info("commit: {}", gitlabWebhook.getCommit());
+            String regex = "(.*?)\\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]";
 
-        if (matcher.matches()){
-            log.info("{}",matcher.group(1));
-            sync.setTitle(matcher.group(1));
-            sync.setTopic(matcher.group(2));
-            sync.setPlatform(matcher.group(3));
-            sync.setDifficulty(matcher.group(4));
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            log.info("matcher.matches(): {}", matcher.matches());
+
+            if (matcher.matches()){
+                log.info("{}",matcher.group(1));
+                sync.setTitle(matcher.group(1));
+                sync.setTopic(matcher.group(2));
+                sync.setPlatform(matcher.group(3));
+                sync.setDifficulty(matcher.group(4));
+            }
+
+            //set time
+            sync.setCreatedAt(new Timestamp(time));
+            return sync;
+        }catch(NullPointerException npe){
+            log.error("Null Pointer Exception \nerr message: {}", npe.getMessage());
+            throw new RuntimeException("Null Pointer");
+        }catch (Exception e){
+            log.error("ERROR: {}", e.getMessage());
+            throw e;
         }
-
-        //set time
-        sync.setCreatedAt(new Timestamp(time));
-
-        return sync;
-
     }
 
 }
