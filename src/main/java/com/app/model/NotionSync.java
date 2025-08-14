@@ -7,12 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
 
-@Document(collation = "commit")
+@Document("commit")
 @Data
 public class NotionSync {
 
     @Id
     private String id;
+
+    String notionDatabaseId;
 
     private String platform;
 
