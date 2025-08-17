@@ -5,10 +5,10 @@ import lombok.Data;
 import java.util.List;
 
 
-public class GithubWebhook {
+@Data
+public class GitlabWebhook {
     private String ref;
     private String pusher;
-    private List<Commit> commits;
-
+    private String commit;
 
 }
