@@ -18,6 +18,6 @@ public interface NotionSyncService {
 
     Map<String, Object> dataToNotion(NotionSync notionSync);
 
-    NotionSync convertMessage(GitlabWebhook gitlabWebhook) throws NotFoundException;
+    NotionSync convertMessage(GitlabWebhook gitlabWebhook);
 
 }
