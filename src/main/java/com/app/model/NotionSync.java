@@ -24,6 +24,8 @@ public class NotionSync {
 
     private String difficulty;
 
+    private String path;
+
     private boolean syncedToNotion;
 
     private Timestamp createdAt;

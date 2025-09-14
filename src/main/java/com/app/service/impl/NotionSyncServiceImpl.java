@@ -37,6 +37,8 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
     private String commitDateParams = "Commit Date";
 
+    private String pathURL;
+
     @Value("${notion.url.add-row}")
     private String ADD_ROW_URL;
 
@@ -132,6 +134,8 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
         properties.put(commitDateParams, Map.of("date", Map.of("start", notionSync.getCreatedAt().toString())));
 
+        properties.put(pathURL, Map.of("url", notionSync.getPath()));
+
         mappings.put(propertiesParams, properties);
 
         return mappings;
@@ -145,7 +149,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
             String input = gitlabWebhook.getCommit();
             long time = System.currentTimeMillis();
             log.info("commit: {}", gitlabWebhook.getCommit());
-            String regex = "(.*?)\\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]";
+            String regex = "(.*?)\\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]\\[(.*?)\\]";
 
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(input);
@@ -157,6 +161,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
                 sync.setTopic(matcher.group(2));
                 sync.setPlatform(matcher.group(3));
                 sync.setDifficulty(matcher.group(4));
+                sync.setPath(matcher.group(5));
             }
 
             //set time
