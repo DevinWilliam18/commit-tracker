@@ -37,7 +37,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
     private String commitDateParams = "Commit Date";
 
-    private String pathURL;
+    private String pathURL = "URL";
 
     @Value("${notion.url.add-row}")
     private String ADD_ROW_URL;
@@ -134,6 +134,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
         properties.put(commitDateParams, Map.of("date", Map.of("start", notionSync.getCreatedAt().toString())));
 
+        log.info("before: {}", notionSync.getPath());
         properties.put(pathURL, Map.of("url", notionSync.getPath()));
 
         mappings.put(propertiesParams, properties);
@@ -156,6 +157,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
             log.info("matcher.matches(): {}", matcher.matches());
 
             if (matcher.matches()){
+                log.info("looping");
                 log.info("{}",matcher.group(1));
                 sync.setTitle(matcher.group(1));
                 sync.setTopic(matcher.group(2));
