@@ -14,9 +14,9 @@ public interface NotionSyncService {
 
     void syncToNotion(GitlabWebhook gitlabWebhook);
 
-    ResponseEntity<String> pushToNotion(NotionSync notionSync);
+    List<ResponseEntity<String>> pushToNotion(List<NotionSync> notionSyncAll);
 
-    Map<String, Object> dataToNotion(NotionSync notionSync);
+    List<Map<String, Object>> dataToNotion(List<NotionSync> notionSync);
 
     NotionSync convertMessage(GitlabWebhook gitlabWebhook);
 
