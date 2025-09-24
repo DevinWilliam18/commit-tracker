@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -95,7 +96,11 @@ public class NotionSyncServiceImpl implements NotionSyncService {
             commitDao.saveAll(unsyncedCommits);
 
             pushToNotion(unsyncedCommits);
+        }catch(DuplicateKeyException dke){
+            log.error("Record already exists");
+            throw dke;
         }catch (DataAccessException dae){
+            log.error("Type Error: {}", dae.getRootCause());
             log.error("ERROR: {}\nat line :{}\n", dae.getMessage(), 84);
             throw dae;
         }catch(NestedRuntimeException nre){
@@ -185,6 +190,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(input);
+
             log.info("matcher.matches(): {}", matcher.matches());
 
             if (matcher.matches()){

@@ -6,6 +6,7 @@ import com.app.service.NotionSyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,8 @@ public class CommitController {
         try{
             notionSyncService.syncToNotion(gitlabWebhook);
             return ResponseEntity.ok("Success");
+        }catch (DuplicateKeyException dke){
+            return new ResponseEntity<>("Record already exists", HttpStatus.CONFLICT);
         }catch (DataAccessException dae){
             return new ResponseEntity<>(dae.getMessage().toString(), HttpStatus.CONFLICT);
         }catch (WrongCharacterPositionException wcpe){

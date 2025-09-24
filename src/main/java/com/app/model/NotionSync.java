@@ -3,12 +3,18 @@ package com.app.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
 
 @Document("commit")
 @Data
+@CompoundIndex(
+        name = "title_platform_idx",
+        def = "{'title': 1 , 'platform':1}",
+        unique = true
+)
 public class NotionSync {
 
     @Id
