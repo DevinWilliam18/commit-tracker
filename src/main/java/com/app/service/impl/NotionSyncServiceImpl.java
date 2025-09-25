@@ -67,6 +67,7 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
     @Override
     public List<NotionSync> getSynedToNotionFalse() {
+        log.info("within a function");
         List<NotionSync> data = commitDao.findBySyncedToNotionFalse();
 
         return data;
@@ -86,15 +87,15 @@ public class NotionSyncServiceImpl implements NotionSyncService {
 
             //check if any unsynced commits stored in database
             unsyncedCommits = getSynedToNotionFalse();
-
+            log.info("Passed 1");
             for (NotionSync notion2: unsyncedCommits) {
                 notion2.setSyncedToNotion(true);
             }
 
             unsyncedCommits.add(sync);
-
+            log.info("Passed 3");
             commitDao.saveAll(unsyncedCommits);
-
+            log.info("Passed 3");
             pushToNotion(unsyncedCommits);
         }catch(DuplicateKeyException dke){
             log.error("Record already exists");
