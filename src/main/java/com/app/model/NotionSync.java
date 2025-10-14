@@ -1,12 +1,16 @@
 package com.app.model;
 
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Document("commit")
 @Data
@@ -34,8 +38,8 @@ public class NotionSync {
 
     private boolean syncedToNotion;
 
-    private Timestamp createdAt;
+    private Instant createdAt;
 
-    private Timestamp updatedAt;
+    private Instant updatedAt;
 
 }
